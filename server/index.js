@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const MONGO_URI = process.env.MONGO_URI;
 
 // 1. Log to prove the file started
 console.log("Starting the server script...");
