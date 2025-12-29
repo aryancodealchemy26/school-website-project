@@ -29,7 +29,7 @@ const Login = () => {
         alert("Login successful! Welcome Admin.");
         // Save the admin ID so the app remembers we are logged in
         localStorage.setItem('adminId', response.data.admin.id);
-        navigate('/'); // Redirect back to Home page for now
+        navigate('/admin-dashboard'); // Redirect to Admin Dashboard
       }
     } catch (err) {
       // If the email or password is wrong, show the error message from the server
