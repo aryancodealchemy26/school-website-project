@@ -4,8 +4,11 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 dotenv.config();
 
+
 const app = express();
 const MONGO_URI = process.env.MONGO_URI;
+
+
 
 // 1. Log to prove the file started
 console.log("Starting the server script...");
@@ -55,4 +58,24 @@ app.listen(PORT, () => {
   console.log(`>>> SUCCESS: Server is live on http://localhost:${PORT}`);
 }).on('error', (err) => {
   console.log(">>> ERROR: Port might be busy:", err.message);
+});
+
+
+// Route to create a new notice
+app.post('/api/notices', async (req, res) => {
+    console.log("1. Server reached!"); // This should appear in terminal
+    console.log("2. Data received:", req.body); 
+    const Notice = require('./models/Notice');
+    try {
+        const newNotice = new Notice({
+            title: req.body.title,
+            content: req.body.content
+        });
+        const savedNotice = await newNotice.save();
+        console.log("3. Success! Saved to DB");
+        res.status(201).json(savedNotice);
+    } catch (error) {
+        console.log("4. CRASHED! Error is:", error.message);
+        res.status(500).json({ error: error.message });
+    }
 });
