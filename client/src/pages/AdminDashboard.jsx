@@ -11,7 +11,8 @@ const AdminDashboard = () => {
       alert("Notice Live on Website!");
       setNotice({ title: '', content: '', category: 'News' }); // Clear form
     } catch (err) {
-      alert("Failed to post notice.");
+      console.error("AXIOS ERROR:", err);
+      alert("Failed to post notice."+ (err.response?.data?.error || err.message));
     }
   };
 
