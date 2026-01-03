@@ -1,1 +1,23 @@
 @import "tailwindcss";
+
+/* Force the animation to exist */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); } /* Changed to -50% for the cloned loop */
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 30s linear infinite;
+}
+
+.hover\:pause:hover {
+  animation-play-state: paused !important;
+}
+
+/* Ensure the body doesn't scroll horizontally */
+body {
+  overflow-x: hidden;
+  margin: 0;
+}

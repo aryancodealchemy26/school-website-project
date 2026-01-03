@@ -51,21 +51,13 @@ app.post('/api/admin/login', async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
-// 2. Fallback to 5001 if 5000 is busy
-const PORT = process.env.PORT || 5001;
 
-app.listen(PORT, () => {
-  console.log(`>>> SUCCESS: Server is live on http://localhost:${PORT}`);
-}).on('error', (err) => {
-  console.log(">>> ERROR: Port might be busy:", err.message);
-});
-
-
+const Notice = require('./models/Notice');
 // Route to create a new notice
 app.post('/api/notices', async (req, res) => {
     console.log("1. Server reached!"); // This should appear in terminal
     console.log("2. Data received:", req.body); 
-    const Notice = require('./models/Notice');
+    
     try {
         const newNotice = new Notice({
             title: req.body.title,
@@ -78,4 +70,22 @@ app.post('/api/notices', async (req, res) => {
         console.log("4. CRASHED! Error is:", error.message);
         res.status(500).json({ error: error.message });
     }
+});
+// 2. Fallback to 5001 if 5000 is busy
+const PORT = process.env.PORT || 5001;
+
+// Route to fetch all notices for the Home Page
+app.get('/api/notices', async (req, res) => {
+  try {
+    const notices = await Notice.find().sort({ date: -1 }); // Get latest first
+    res.status(200).json(notices);
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching notices" });
+  }
+});
+
+app.listen(PORT, () => {
+  console.log(`>>> SUCCESS: Server is live on http://localhost:${PORT}`);
+}).on('error', (err) => {
+  console.log(">>> ERROR: Port might be busy:", err.message);
 });
