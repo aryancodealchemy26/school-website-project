@@ -83,6 +83,15 @@ app.get('/api/notices', async (req, res) => {
     res.status(500).json({ message: "Error fetching notices" });
   }
 });
+// Route to delete a notice
+app.delete('/api/notices/:id', async (req, res) => {
+  try {
+    await Notice.findByIdAndDelete(req.params.id);
+    res.status(200).json({ message: "Notice deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to delete notice" });
+  }
+});
 
 app.listen(PORT, () => {
   console.log(`>>> SUCCESS: Server is live on http://localhost:${PORT}`);
