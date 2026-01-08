@@ -8,3 +8,6 @@
   - Initialized Git repository.
   - Initialized backend `package.json` in `/server`.
   Till Now 8 DAYS of work has been done already
+
+  WE HAVE ADDED THE NOTICE SECTION IN THE HOME PAGE
+  
