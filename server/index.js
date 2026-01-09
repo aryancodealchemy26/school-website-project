@@ -92,7 +92,19 @@ app.delete('/api/notices/:id', async (req, res) => {
     res.status(500).json({ error: "Failed to delete notice" });
   }
 });
-
+// Route to update a notice
+app.put('/api/notices/:id', async (req, res) => {
+  try {
+    const updatedNotice = await Notice.findByIdAndUpdate(
+      req.params.id, 
+      req.body, 
+      { new: true } // This returns the fixed version back to us
+    );
+    res.json(updatedNotice);
+  } catch (err) {
+    res.status(500).json({ error: "Update failed" });
+  }
+});
 app.listen(PORT, () => {
   console.log(`>>> SUCCESS: Server is live on http://localhost:${PORT}`);
 }).on('error', (err) => {

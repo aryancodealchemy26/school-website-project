@@ -1,96 +1,98 @@
-import React, { useState, useEffect } from 'react'; // Added useEffect
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const AdminDashboard = () => {
-  const [notice, setNotice] = useState({ title: '', content: '', category: 'News' });
-  const [existingNotices, setExistingNotices] = useState([]); // Defined missing state
+  const [notice, setNotice] = useState({ title: '', content: '' });
+  const [existingNotices, setExistingNotices] = useState([]);
+  const [isEditing, setIsEditing] = useState(false); // Track mode
+  const [editId, setEditId] = useState(null); // Track which one to fix
 
-  // Fetch notices so we can manage them
   useEffect(() => {
-    const fetchNotices = async () => {
-      try {
-        const res = await axios.get('http://localhost:5000/api/notices');
-        setExistingNotices(res.data);
-      } catch (err) {
-        console.error("Error fetching notices", err);
-      }
-    };
     fetchNotices();
   }, []);
 
-  const handlePost = async (e) => {
+  const fetchNotices = async () => {
+    const res = await axios.get('http://localhost:5000/api/notices');
+    setExistingNotices(res.data);
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('http://localhost:5000/api/notices', notice);
-      alert("Notice Live on Website!");
-      setExistingNotices([res.data, ...existingNotices]); // Add new notice to list immediately
-      setNotice({ title: '', content: '', category: 'News' }); 
+      if (isEditing) {
+        // UPDATE Logic
+        await axios.put(`http://localhost:5000/api/notices/${editId}`, notice);
+        alert("Notice Updated!");
+      } else {
+        // POST Logic
+        await axios.post('http://localhost:5000/api/notices', notice);
+        alert("Notice Published!");
+      }
+      setNotice({ title: '', content: '' });
+      setIsEditing(false);
+      fetchNotices();
     } catch (err) {
-      alert("Failed to post: " + (err.response?.data?.error || err.message));
+      alert("Error saving notice");
     }
   };
 
+  const handleEdit = (n) => {
+    setIsEditing(true);
+    setEditId(n._id);
+    setNotice({ title: n.title, content: n.content });
+    window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll up to the form
+  };
+
   const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this notice?")) {
-      try {
-        await axios.delete(`http://localhost:5000/api/notices/${id}`);
-        setExistingNotices(existingNotices.filter(n => n._id !== id));
-        alert("Notice Deleted!");
-      } catch (err) {
-        alert("Error deleting notice");
-      }
+    if (window.confirm("Delete this notice?")) {
+      await axios.delete(`http://localhost:5000/api/notices/${id}`);
+      fetchNotices();
     }
   };
 
   return (
-    <div className="p-10 max-w-4xl mx-auto"> {/* Increased width for better layout */}
+    <div className="p-10 max-w-4xl mx-auto">
       <h1 className="text-2xl font-bold mb-6 text-blue-800 text-center">Admin Console</h1>
       
-      {/* POST FORM */}
-      <div className="max-w-2xl mx-auto">
-        <h2 className="text-xl font-semibold mb-4">Post New Announcement</h2>
-        <form onSubmit={handlePost} className="space-y-4 bg-white p-6 rounded-xl shadow-md border">
-          <input 
-            className="w-full p-3 border rounded-lg focus:outline-blue-500"
-            placeholder="Notice Title"
-            onChange={(e) => setNotice({...notice, title: e.target.value})}
-            value={notice.title} required
-          />
-          <textarea 
-            className="w-full p-3 border rounded-lg h-32 focus:outline-blue-500"
-            placeholder="Notice Description..."
-            onChange={(e) => setNotice({...notice, content: e.target.value})}
-            value={notice.content} required
-          />
-          <button className="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition">
-            Publish to Home Page
+      {/* Dynamic Form */}
+      <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 rounded-xl shadow-md border mb-10">
+        <h2 className="text-xl font-bold">{isEditing ? "📝 Edit Notice" : "📢 New Notice"}</h2>
+        <input 
+          className="w-full p-3 border rounded-lg focus:outline-blue-500"
+          placeholder="Title"
+          onChange={(e) => setNotice({...notice, title: e.target.value})}
+          value={notice.title} required
+        />
+        <textarea 
+          className="w-full p-3 border rounded-lg h-32 focus:outline-blue-500"
+          placeholder="Description..."
+          onChange={(e) => setNotice({...notice, content: e.target.value})}
+          value={notice.content} required
+        />
+        <div className="flex gap-2">
+          <button className={`flex-1 py-3 rounded-lg font-bold text-white transition ${isEditing ? 'bg-orange-500' : 'bg-blue-600'}`}>
+            {isEditing ? "Update Now" : "Publish Now"}
           </button>
-        </form>
-      </div>
-
-      {/* MANAGE SECTION (Now inside the return block) */}
-      <div className="mt-12">
-        <h2 className="text-2xl font-bold mb-4">Manage Existing Notices</h2>
-        <div className="bg-white shadow-md rounded-lg overflow-hidden border">
-          {existingNotices.length > 0 ? (
-            existingNotices.map((n) => (
-              <div key={n._id} className="p-4 border-b flex justify-between items-center hover:bg-gray-50">
-                <div>
-                  <p className="font-bold text-gray-800">{n.title}</p>
-                  <p className="text-xs text-gray-500">{new Date(n.date).toLocaleDateString()}</p>
-                </div>
-                <button 
-                  onClick={() => handleDelete(n._id)}
-                  className="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-700 transition text-sm"
-                >
-                  Delete
-                </button>
-              </div>
-            ))
-          ) : (
-            <p className="p-4 text-center text-gray-500">No notices found in database.</p>
+          {isEditing && (
+            <button type="button" onClick={() => {setIsEditing(false); setNotice({title:'', content:''})}} className="bg-gray-400 px-6 rounded-lg text-white">Cancel</button>
           )}
         </div>
+      </form>
+
+      {/* List with Edit & Delete */}
+      <div className="bg-white shadow-md rounded-lg overflow-hidden border">
+        {existingNotices.map((n) => (
+          <div key={n._id} className="p-4 border-b flex justify-between items-center hover:bg-gray-50">
+            <div>
+              <p className="font-bold">{n.title}</p>
+              <p className="text-xs text-gray-500">{new Date(n.date).toLocaleDateString()}</p>
+            </div>
+            <div className="flex gap-2">
+              <button onClick={() => handleEdit(n)} className="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-700">Edit</button>
+              <button onClick={() => handleDelete(n._id)} className="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-700">Delete</button>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
