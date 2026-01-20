@@ -1,30 +1,46 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom'; // Import added
 
 const AdminDashboard = () => {
   const [notice, setNotice] = useState({ title: '', content: '' });
   const [existingNotices, setExistingNotices] = useState([]);
-  const [isEditing, setIsEditing] = useState(false); // Track mode
-  const [editId, setEditId] = useState(null); // Track which one to fix
+  const [isEditing, setIsEditing] = useState(false);
+  const [editId, setEditId] = useState(null);
+  
+  const navigate = useNavigate(); // Moved INSIDE the component
 
+  // Security Check & Initial Fetch merged
   useEffect(() => {
-    fetchNotices();
-  }, []);
+    const auth = localStorage.getItem('isAdmin');
+    if (auth !== 'true') {
+      navigate('/admin-login'); // Kick out if not logged in
+    } else {
+      fetchNotices();
+    }
+  }, [navigate]);
 
   const fetchNotices = async () => {
-    const res = await axios.get('http://localhost:5000/api/notices');
-    setExistingNotices(res.data);
+    try {
+      const res = await axios.get('http://localhost:5000/api/notices');
+      setExistingNotices(res.data);
+    } catch (err) {
+      console.error("Error fetching notices");
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('isAdmin'); // Clear the login flag
+    navigate('/admin-login');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       if (isEditing) {
-        // UPDATE Logic
         await axios.put(`http://localhost:5000/api/notices/${editId}`, notice);
         alert("Notice Updated!");
       } else {
-        // POST Logic
         await axios.post('http://localhost:5000/api/notices', notice);
         alert("Notice Published!");
       }
@@ -40,7 +56,7 @@ const AdminDashboard = () => {
     setIsEditing(true);
     setEditId(n._id);
     setNotice({ title: n.title, content: n.content });
-    window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll up to the form
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleDelete = async (id) => {
@@ -52,9 +68,17 @@ const AdminDashboard = () => {
 
   return (
     <div className="p-10 max-w-4xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6 text-blue-800 text-center">Admin Console</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold text-blue-800">Admin Console</h1>
+        <button 
+          onClick={handleLogout}
+          className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition"
+        >
+          Logout
+        </button>
+      </div>
       
-      {/* Dynamic Form */}
+      {/* Form and List continue as you wrote them... */}
       <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 rounded-xl shadow-md border mb-10">
         <h2 className="text-xl font-bold">{isEditing ? "📝 Edit Notice" : "📢 New Notice"}</h2>
         <input 
@@ -79,7 +103,6 @@ const AdminDashboard = () => {
         </div>
       </form>
 
-      {/* List with Edit & Delete */}
       <div className="bg-white shadow-md rounded-lg overflow-hidden border">
         {existingNotices.map((n) => (
           <div key={n._id} className="p-4 border-b flex justify-between items-center hover:bg-gray-50">

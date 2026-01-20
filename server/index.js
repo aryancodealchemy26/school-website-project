@@ -52,6 +52,17 @@ app.post('/api/admin/login', async (req, res) => {
   }
 });
 
+// Admin Login Route
+app.post('/api/admin/login', (req, res) => {
+  const { username, password } = req.body;
+
+  // Replace 'admin123' with your preferred password
+  if (username === 'admin' && password === 'admin123') {
+    res.json({ success: true, message: "Login Successful" });
+  } else {
+    res.status(401).json({ success: false, message: "Invalid Credentials" });
+  }
+});
 const Notice = require('./models/Notice');
 // Route to create a new notice
 app.post('/api/notices', async (req, res) => {

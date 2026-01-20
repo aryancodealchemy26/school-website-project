@@ -57,6 +57,39 @@ const Home = () => {
         </div>
       )}
 
+      {/* Stats Section */}
+<div className="bg-gray-50 py-12 border-b">
+  <div className="max-w-6xl mx-auto px-4">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+      
+      {/* Stat 1 */}
+      <div className="p-4">
+        <h2 className="text-4xl font-extrabold text-blue-800">1500+</h2>
+        <p className="text-gray-600 font-medium">Students enrolled</p>
+      </div>
+
+      {/* Stat 2 */}
+      <div className="p-4">
+        <h2 className="text-4xl font-extrabold text-blue-800">50+</h2>
+        <p className="text-gray-600 font-medium">Expert Teachers</p>
+      </div>
+
+      {/* Stat 3 */}
+      <div className="p-4">
+        <h2 className="text-4xl font-extrabold text-blue-800">20+</h2>
+        <p className="text-gray-600 font-medium">Extra-curriculars</p>
+      </div>
+
+      {/* Stat 4 */}
+      <div className="p-4">
+        <h2 className="text-4xl font-extrabold text-blue-800">100%</h2>
+        <p className="text-gray-600 font-medium">Success Rate</p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
       {/* 3. Main Content Section */}
       <div className="p-8">
         <h1 className="text-3xl font-bold text-center mb-8">Latest Announcements</h1>
