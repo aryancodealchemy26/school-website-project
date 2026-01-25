@@ -26,37 +26,39 @@ app.get('/', (req, res) => {
 const Admin = require('./models/Admin');
 
 // Login Route
-app.post('/api/admin/login', async (req, res) => {
-  const { email, password } = req.body;
+// app.post('/api/admin/login', async (req, res) => {
+//   const { email, password } = req.body;
 
-  try {
-    // 1. Find the admin by email
-    const admin = await Admin.findOne({ email });
-    if (!admin) {
-      return res.status(404).json({ message: "Admin account not found" });
-    }
+//   try {
+//     // 1. Find the admin by email
+//     const admin = await Admin.findOne({ email });
+//     if (!admin) {
+//       return res.status(404).json({ message: "Admin account not found" });
+//     }
 
-    // 2. Check if password matches (Plain text for now)
-    if (admin.password !== password) {
-      return res.status(401).json({ message: "Invalid email or password" });
-    }
+//     // 2. Check if password matches (Plain text for now)
+//     if (admin.password !== password) {
+//       return res.status(401).json({ message: "Invalid email or password" });
+//     }
 
-    // 3. Success
-    res.status(200).json({ 
-      message: "Login successful!", 
-      admin: { id: admin._id, email: admin.email } 
-    });
+//     // 3. Success
+//     res.status(200).json({ 
+//       message: "Login successful!", 
+//       admin: { id: admin._id, email: admin.email } 
+//     });
 
-  } catch (err) {
-    res.status(500).json({ message: "Internal Server Error" });
-  }
-});
+//   } catch (err) {
+//     res.status(500).json({ message: "Internal Server Error" });
+//   }
+// });
 
 // Admin Login Route
+// ONLY KEEP THIS ONE
 app.post('/api/admin/login', (req, res) => {
   const { username, password } = req.body;
 
-  // Replace 'admin123' with your preferred password
+  console.log("Login attempt for:", username); // Debugging line
+
   if (username === 'admin' && password === 'admin123') {
     res.json({ success: true, message: "Login Successful" });
   } else {
