@@ -7,7 +7,7 @@ const AdminDashboard = () => {
   const [existingNotices, setExistingNotices] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [editId, setEditId] = useState(null);
-  
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate(); // Moved INSIDE the component
 
   // Security Check & Initial Fetch merged
@@ -21,12 +21,15 @@ const AdminDashboard = () => {
   }, [navigate]);
 
   const fetchNotices = async () => {
-    try {
-      const res = await axios.get('http://localhost:5000/api/notices');
-      setExistingNotices(res.data);
-    } catch (err) {
-      console.error("Error fetching notices");
-    }
+  try {
+    setLoading(true); // Start loading
+    const res = await axios.get('http://localhost:5000/api/notices');
+    setExistingNotices(res.data);
+    setLoading(false); // Stop loading
+  } catch (err) {
+    setLoading(false);
+    console.error("Error fetching notices");
+  }
   };
 
   const handleLogout = () => {
@@ -103,20 +106,39 @@ const AdminDashboard = () => {
         </div>
       </form>
 
-      <div className="bg-white shadow-md rounded-lg overflow-hidden border">
-        {existingNotices.map((n) => (
+      <div className="mt-12">
+  <h2 className="text-2xl font-bold mb-4 text-gray-800">Manage Existing Notices</h2>
+  
+  {/* THIS IS THE WRAPPER DIV */}
+  <div className="bg-white shadow-md rounded-lg overflow-hidden border">
+    
+    {/* 1. If loading is true, show this message */}
+    {loading ? (
+      <div className="p-10 text-center text-blue-600 font-bold animate-pulse">
+        <p className="text-lg">Fetching latest notices from database...</p>
+      </div>
+    ) : (
+      /* 2. If loading is false, show the actual list */
+      existingNotices.length > 0 ? (
+        existingNotices.map((n) => (
           <div key={n._id} className="p-4 border-b flex justify-between items-center hover:bg-gray-50">
             <div>
-              <p className="font-bold">{n.title}</p>
-              <p className="text-xs text-gray-500">{new Date(n.date).toLocaleDateString()}</p>
+              <p className="font-bold text-gray-800">{n.title}</p>
+              <p className="text-xs text-gray-400">{new Date(n.date).toLocaleDateString()}</p>
             </div>
             <div className="flex gap-2">
-              <button onClick={() => handleEdit(n)} className="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-700">Edit</button>
-              <button onClick={() => handleDelete(n._id)} className="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-700">Delete</button>
+              <button onClick={() => handleEdit(n)} className="bg-blue-500 text-white px-3 py-1 rounded text-sm">Edit</button>
+              <button onClick={() => handleDelete(n._id)} className="bg-red-500 text-white px-3 py-1 rounded text-sm">Delete</button>
             </div>
           </div>
-        ))}
-      </div>
+        ))
+      ) : (
+        /* 3. If loading is false but database is empty */
+        <p className="p-10 text-center text-gray-500">No notices found.</p>
+      )
+    )}
+  </div>
+</div>
     </div>
   );
 };

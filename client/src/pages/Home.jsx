@@ -90,6 +90,36 @@ const Home = () => {
   </div>
 </div>
 
+<section className="py-16 bg-white">
+  <div className="max-w-6xl mx-auto px-4 grid md:grid-cols-2 gap-12">
+    {/* Contact Form */}
+    <div className="bg-gray-50 p-8 rounded-2xl shadow-sm border">
+      <h2 className="text-3xl font-bold mb-6 text-blue-800">Get in Touch</h2>
+      <form className="space-y-4">
+        <input type="text" placeholder="Parent Name" className="w-full p-3 border rounded-lg outline-blue-500" />
+        <input type="email" placeholder="Email Address" className="w-full p-3 border rounded-lg outline-blue-500" />
+        <textarea placeholder="Your Message..." className="w-full p-3 border rounded-lg h-32 outline-blue-500"></textarea>
+        <button className="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition">
+          Send Message
+        </button>
+      </form>
+    </div>
+
+    {/* Quick Info & Map Placeholder */}
+    <div className="flex flex-col justify-center">
+      <h2 className="text-3xl font-bold mb-6 text-blue-800">Visit Us</h2>
+      <p className="text-gray-600 mb-4 font-medium">📍 123 Education Lane, Learning City, 45678</p>
+      <p className="text-gray-600 mb-4 font-medium">📞 +1 (234) 567-890</p>
+      <p className="text-gray-600 mb-8 font-medium">✉️ info@schoolportal.edu</p>
+      <div className="w-full h-64 bg-gray-200 rounded-2xl flex items-center justify-center border-2 border-dashed border-gray-300">
+        <span className="text-gray-500 font-bold text-lg text-center px-4">
+          Google Maps API Integration <br/> (Placeholder)
+        </span>
+      </div>
+    </div>
+  </div>
+</section>
+
       {/* 3. Main Content Section */}
       <div className="p-8">
         <h1 className="text-3xl font-bold text-center mb-8">Latest Announcements</h1>
@@ -110,6 +140,8 @@ const Home = () => {
         </div>
       </div>
     </div>
+
+    
   );
 };
 
