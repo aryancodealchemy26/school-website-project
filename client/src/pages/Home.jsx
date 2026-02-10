@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-
+const [formData, setFormData] = useState({ name: '', email: '', message: '' });
 const Home = () => {
   const [notices, setNotices] = useState([]);
 
@@ -143,6 +143,17 @@ const Home = () => {
 
     
   );
+};
+
+const handleContactSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    await axios.post('http://localhost:5000/api/inquiries', formData);
+    alert("Thank you! Your message has been sent to the school office.");
+    setFormData({ name: '', email: '', message: '' }); // Clear form
+  } catch (err) {
+    alert("System busy. Please try calling the school directly.");
+  }
 };
 
 export default Home;

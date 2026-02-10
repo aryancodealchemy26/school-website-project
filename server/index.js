@@ -8,7 +8,7 @@ dotenv.config();
 const app = express();
 const MONGO_URI = process.env.MONGO_URI;
 
-
+const Inquiry = require('./models/Inquiry');
 
 // 1. Log to prove the file started
 console.log("Starting the server script...");
@@ -83,6 +83,15 @@ app.post('/api/notices', async (req, res) => {
         console.log("4. CRASHED! Error is:", error.message);
         res.status(500).json({ error: error.message });
     }
+});
+app.post('/api/inquiries', async (req, res) => {
+  try {
+    const newInquiry = new Inquiry(req.body);
+    await newInquiry.save();
+    res.status(201).json({ message: "Message sent successfully!" });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to send message" });
+  }
 });
 // 2. Fallback to 5001 if 5000 is busy
 const PORT = process.env.PORT || 5001;
